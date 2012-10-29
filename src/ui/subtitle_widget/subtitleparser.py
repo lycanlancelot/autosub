@@ -1,4 +1,4 @@
-# coding=utf8
+#coding = utf-8 
 import re
 import chardet
 import codecs
@@ -53,7 +53,7 @@ def SrtParser(url):
 		nsub.append(tmp[0].replace(',','.'))
 		nsub.append(tmp[2].replace(',','.'));
 		nsub.append(allitem[i*4+2])
-		print nsub
+		# print nsub
 		li.append(nsub);
 	return li;
 	# print allitem

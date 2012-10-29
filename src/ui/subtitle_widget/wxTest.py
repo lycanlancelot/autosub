@@ -1,4 +1,4 @@
-# # -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*- 
 # # import wx
 # # class MyFrame(wx.Frame):
 # # 	"""docstring for MyFrame"""
@@ -101,12 +101,14 @@
 # absolute.py
 
 import wx
+import os
+from subtitleparser import *
 from SubtitleUI import TestFrame
 class Example(wx.Frame):
     colLabels = ["homer", "marge", "bart", "lisa", "maggie"]
     def __init__(self, parent, title):
         super(Example, self).__init__(parent, title=title, 
-            size=(280, 300))
+            size=(380, 300))
             
         self.InitUI()
         self.Centre()
@@ -115,10 +117,23 @@ class Example(wx.Frame):
     def InitUI(self):
     
         panel = wx.Panel(self, -1)
-        self.TextCtrl=wx.TextCtrl(panel, pos=(3, 3), size=(250, 100))
-        samplelist=['zero|ds','one |ds','two','three','four','five','six','seven','eight','nine','ten']
-        self.listBox=wx.ListBox(panel,-1,(0,120),(250,120),samplelist,wx.LB_SINGLE)
+
+        self.begintext=wx.StaticText(panel,-1,"Start time",(33,23));
+        self.endtext=wx.StaticText(panel,-1,"End time",(183,23));
+        
+
+        self.text=wx.StaticText(panel,-1,"Content",(170,40))
+        
+
+        self.TextCtrl=wx.TextCtrl(panel, pos=(3, 60), size=(350, 50))
+        self.num=wx.TextCtrl(panel,pos=(3,23),size=(28,20))
+        self.begintime=wx.TextCtrl(panel,pos=(80,23),size=(100,20))
+        self.endtime=wx.TextCtrl(panel,pos=(230,23),size=(100,20))
+
+        samplelist=['1 00:00','2 00:01'];
+        self.listBox=wx.ListBox(panel,-1,(3,120),(350,100),samplelist,wx.LB_SINGLE)
         self.listBox.SetSelection(1)
+
         menubar = wx.MenuBar()
         filem = wx.Menu()
         editm = wx.Menu()
@@ -126,15 +141,49 @@ class Example(wx.Frame):
         menubar.Append(filem, '&File')
         menubar.Append(editm, '&Edit')
         menubar.Append(helpm, '&Help')
-        filem.Append(wx.NewId(),u"Open","Open a File")
+        openb=filem.Append(wx.NewId(),u"Open","Open a File")
+        self.Bind(wx.EVT_MENU, self.OpenFile, openb)
         self.Bind(wx.EVT_LISTBOX_DCLICK,self.ChooseOneItem,self.listBox);
         self.SetMenuBar(menubar)
         statusbar=self.CreateStatusBar()
+
         # hbox.Add(frid, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
     def ChooseOneItem(self,event):
     	index=self.listBox.GetSelection()
-    	self.TextCtrl.SetValue(self.listBox.GetString(index))
-    	
+    	content=self.listBox.GetString(index)
+    	tmp=content.split(' ')
+    	self.num.SetValue(tmp[0])
+    	self.begintime.SetValue(tmp[1])
+    	self.endtime.SetValue(tmp[3])
+    	ct=0
+    	subti=""
+    	for i in tmp:
+    		if(ct>3):
+    			subti=subti+' '+i;
+    		ct=ct+1;
+    	self.TextCtrl.SetValue(subti)
+    def OpenFile(self,event):
+		file_wildcard = "All files(*.*)|*.*"
+		dlg = wx.FileDialog(self, "Open paint file...",
+                            os.getcwd(), 
+                            style = wx.OPEN,
+                            wildcard = file_wildcard)
+		if(dlg.ShowModal() == wx.ID_OK):
+			self.filename=dlg.GetPath()
+		foot=self.filename
+		if(foot[len(foot)-1] == 't' ):
+			li=SrtParser(foot)
+		elif (foot[len(foot)-1]== 's'):
+			li=AssParser(foot);
+		self.listBox.Clear()
+		for i in li:
+			srt=str(i[0])+' '+i[1]+' -> '+i[2]+' '+i[3];
+			ad=srt.decode('utf-8','ignore');
+			self.listBox.Append(ad);
+			# print ad;
+
+
+
         
 
 

@@ -63,7 +63,7 @@ class sub_generator(processor):
                             req = urllib2.Request(url)
                             req.add_header('Authorization', 'bearer '+token)
                             conn = urllib2.urlopen(req)
-                            trans_text = conn.read()[68:-9].decode('utf-8').encode('gbk')
+                            trans_text = conn.read()[68:-9].decode('utf-8')
                             break
                         except:
                             post_data = {'grant_type':'client_credentials', 'client_id':'autosub','client_secret':'autosubautosubautosub', 'scope':'http://api.microsofttranslator.com'}
@@ -72,7 +72,8 @@ class sub_generator(processor):
                             obj = json.loads(conn.read())
                             token = obj['access_token']
                     print 'translation:', trans_text
-                    sub_text = trans_text
+                    sub_text = recog_text+"\n";
+                    sub_text = (sub_text+trans_text).encode('utf-8')
             
             seg = (int(seg[0]*100), int(seg[1]*100))
             count = count + 1  
